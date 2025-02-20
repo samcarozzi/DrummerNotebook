@@ -186,15 +186,17 @@ def separate_stems(file_path):
 
     # Construct the new path dynamically
     output_folder = os.path.join("drums")
+    print("this is separate stems: " + output_folder)
 
     command = ["demucs", "-d", "cpu", "--mp3", "--mp3-bitrate", "320", "--two-stems=drums", file_path, "--out", output_folder]
     
     sp.run(command, check=True)
 
+
 #fix
 def onset_times_create(file_path):
 
-    
+    """
 
     # Extract the parent folder name (e.g., "baiana")
     base_dir = os.path.splitext(os.path.basename(file_path))[0]
@@ -203,11 +205,17 @@ def onset_times_create(file_path):
 
     parent_folder = os.path.dirname(os.path.dirname(file_path))
     print(parent_folder)
-
+    
+    
     # Construct the new path dynamically
-    demucs_path = os.path.join(parent_folder, "htdemucs", base_dir, "drums.mp3")
+    demucs_path = os.path.join(parent_folder, "drums","htdemucs", base_dir, "drums.mp3")
 
     print(demucs_path)
+
+    """
+
+    demucs_path = file_path
+   
 
 
     audio, sr = torchaudio.load(demucs_path, format="mp3")
@@ -286,14 +294,16 @@ def transcriptions_to_midi_and_audio(file_path, onset_times, tempo=120):
     """
     
 
-   
+    """
     # Extract the base name of the file (without extension)
     file_stem = os.path.splitext(os.path.basename(file_path))[0]  # "sambeat"
 
     # Construct the output folder structure dynamically
     parent_folder = os.path.dirname(os.path.dirname(file_path))  # Moves up one directory
-    output_folder = os.path.join(parent_folder, "htdemucs", file_stem)
-    print(output_folder)
+    output_folder = os.path.join(parent_folder, "drums", "htdemucs", file_stem)
+    print(output_folder) """
+
+    output_folder = file_path
 
     # Initialize PrettyMIDI object
     midi = pretty_midi.PrettyMIDI(initial_tempo=tempo)
@@ -341,7 +351,7 @@ def process_audio(file_path):
     #separate_stems(file_path)
 
     print("🔹 Extracting Onset Times...")
-    (onset_times, audio, sr) = onset_times_create(file_path)
+    (onset_times, audio, sr) = onset_times_create("/Users/samcarozzi/Documents/GitHub/HIL-Backend/flask/drums/htdemucs/ghostbusters/drums.mp3")
 
     print("🔹 Preparing Dataset...")
     pred_loader = load_dataset(onset_times, audio, sr)
@@ -350,7 +360,7 @@ def process_audio(file_path):
     run_model(model, onset_times, pred_loader)
 
     print("🔹 Generating MIDI...")
-    transcriptions_to_midi_and_audio(file_path, onset_times, tempo=120)
+    transcriptions_to_midi_and_audio("/Users/samcarozzi/Documents/GitHub/HIL-Backend/flask/drums/htdemucs/ghostbusters", onset_times, tempo=120)
 
     print("✅ Processing Complete!")
 
@@ -360,7 +370,7 @@ def main():
     print("main")
     
     ##/Users/samcarozzi/Documents/GitHub/HIL-Backend/drums/test/sambeat.mp3
-    process_audio("/Users/samcarozzi/Documents/GitHub/HIL-Backend/drums/test/sambeat.mp3")
+    process_audio("/Users/samcarozzi/Documents/GitHub/HIL-Backend/drums/test/ghostbusters.wav")
 
 if __name__ == "__main__":
     try:
